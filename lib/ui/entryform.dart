@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:sqlite/models/contact.dart';
 
 class EntryForm extends StatefulWidget {
+  //final Contact contact;
   const EntryForm({super.key});
 
   @override
   State<EntryForm> createState() => _EntryFormState();
 }
 
-class _EntryFormState extends State<EntryForm> {  
+class _EntryFormState extends State<EntryForm> {
+  //Contact contact;
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
@@ -55,22 +57,30 @@ class _EntryFormState extends State<EntryForm> {
               child: Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(                      
-                      child: Text('Simpan', textScaleFactor: 1.5,),
-                      onPressed: () {
-                        
-                      },
-                    )
+                      child: ElevatedButton(
+                    child: Text(
+                      'Simpan',
+                      textScaleFactor: 1.5,
+                    ),
+                    onPressed: () {
+                      Contact contact =
+                          Contact(nameController.text, phoneController.text);
+                      Navigator.pop(context, contact);
+                    },
+                  )),
+                  Container(
+                    width: 5.0,
                   ),
-                  Container(width: 5.0,),
                   Expanded(
-                    child: ElevatedButton(
-                      child: Text('Batal', textScaleFactor: 1.5,),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  )
+                      child: ElevatedButton(
+                    child: Text(
+                      'Batal',
+                      textScaleFactor: 1.5,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ))
                 ],
               ),
             )

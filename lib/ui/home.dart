@@ -13,6 +13,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  DbHelper dbHelper = DbHelper();
+  int count = 0;
+  List<Contact> contactList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +28,26 @@ class _HomeState extends State<Home> {
         child: Icon(Icons.add),
         tooltip: 'Tambah Data',
         onPressed: () async {
-          await navigateToEntryForm(context);          
+          var contact = await navigateToEntryForm(context);
+          if (contact.name != '' && contact.phone != '') {
+            addContact(contact);
+          }
         },
       ),
     );
   }
 
   navigateToEntryForm(BuildContext context) async {
-    var result = await Navigator.push(
-      context, 
-      MaterialPageRoute(builder: (BuildContext context){ return EntryForm(); })
-      );
+    var result = await Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) {
+      return EntryForm();
+    }));
     return result;
   }
 
-  ListView createListView(){
+  ListView createListView() {
     return ListView.builder(
-      itemCount: 5,
+      itemCount: count,
       itemBuilder: (BuildContext context, int index) {
         return Card(
           color: Colors.white,
@@ -51,20 +57,36 @@ class _HomeState extends State<Home> {
               backgroundColor: Colors.red,
               child: Icon(Icons.people),
             ),
-          title: Text('Nama'),
-          subtitle: Text('123456'),
-          trailing: GestureDetector(
-            child: Icon(Icons.delete),
-            onTap: () {
-              
-            },
+            title: Text(this.contactList[index].name),
+            subtitle: Text(this.contactList[index].phone),
+            trailing: GestureDetector(
+              child: Icon(Icons.delete),
+              onTap: () {},
+            ),
+            onTap: () async {},
           ),
-          onTap: () async {            
-            
-          },
-          ),      
         );
       },
     );
+  }
+
+  void addContact(Contact object) async {
+    int result = await dbHelper.insert(object);
+    if (result > 0) {
+      updateListView();
+    }
+  }
+
+  void updateListView() {
+    final Future<Database> dbFuture = dbHelper.initDb();
+    dbFuture.then((database) {
+      Future<List<Contact>> contactListFuture = dbHelper.getContactList();
+      contactListFuture.then((contactList) {
+        setState(() {
+          this.contactList = contactList;
+          this.count = contactList.length;
+        });
+      });
+    });
   }
 }
