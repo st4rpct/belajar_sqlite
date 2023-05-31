@@ -68,16 +68,14 @@ class _HomeState extends State<Home> {
             subtitle: Text(this.contactList[index].phone),
             trailing: GestureDetector(
               child: Icon(Icons.delete),
-              onTap: () {
-                deleteContact(contactList[index]);
-              },
+              onTap: () {},
             ),
             onTap: () async {
               var contact =
                   await navigateToEntryForm(context, this.contactList[index]);
-              if (contact.name != '' && contact.phone != '') {
-                editContact(contact);
-              }
+              //if (contact.name != '' && contact.phone != '') {
+              //addContact(contact);
+              //}
             },
           ),
         );
@@ -87,20 +85,6 @@ class _HomeState extends State<Home> {
 
   void addContact(Contact object) async {
     int result = await dbHelper.insert(object);
-    if (result > 0) {
-      updateListView();
-    }
-  }
-
-  void editContact(Contact object) async {
-    int result = await dbHelper.update(object);
-    if (result > 0) {
-      updateListView();
-    }
-  }
-
-  void deleteContact(Contact object) async {
-    int result = await dbHelper.delete(object.id);
     if (result > 0) {
       updateListView();
     }

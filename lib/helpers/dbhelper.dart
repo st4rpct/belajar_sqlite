@@ -49,12 +49,6 @@ class DbHelper {
     return count;
   }
 
-  Future<int> delete(int id) async {
-    Database db = await this.database;
-    int count = await db.delete('contact', where: 'id=?', whereArgs: [id]);
-    return count;
-  }
-
   Future<List<Map<String, dynamic>>> select() async {
     Database db = await this.database;
     var mapList = await db.query('contact', orderBy: 'name');
