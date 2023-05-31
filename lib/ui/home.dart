@@ -18,6 +18,12 @@ class _HomeState extends State<Home> {
   List<Contact> contactList = [];
 
   @override
+  void initState() {
+    super.initState();
+    updateListView();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +34,7 @@ class _HomeState extends State<Home> {
         child: Icon(Icons.add),
         tooltip: 'Tambah Data',
         onPressed: () async {
-          var contact = await navigateToEntryForm(context);
+          var contact = await navigateToEntryForm(context, Contact('', ''));
           if (contact.name != '' && contact.phone != '') {
             addContact(contact);
           }
@@ -37,10 +43,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  navigateToEntryForm(BuildContext context) async {
+  Future<Contact> navigateToEntryForm(
+      BuildContext context, Contact contact) async {
     var result = await Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) {
-      return EntryForm();
+      return EntryForm(contact: contact);
     }));
     return result;
   }
@@ -61,9 +68,17 @@ class _HomeState extends State<Home> {
             subtitle: Text(this.contactList[index].phone),
             trailing: GestureDetector(
               child: Icon(Icons.delete),
-              onTap: () {},
+              onTap: () {
+                deleteContact(contactList[index]);
+              },
             ),
-            onTap: () async {},
+            onTap: () async {
+              var contact =
+                  await navigateToEntryForm(context, this.contactList[index]);
+              if (contact.name != '' && contact.phone != '') {
+                editContact(contact);
+              }
+            },
           ),
         );
       },
@@ -72,6 +87,20 @@ class _HomeState extends State<Home> {
 
   void addContact(Contact object) async {
     int result = await dbHelper.insert(object);
+    if (result > 0) {
+      updateListView();
+    }
+  }
+
+  void editContact(Contact object) async {
+    int result = await dbHelper.update(object);
+    if (result > 0) {
+      updateListView();
+    }
+  }
+
+  void deleteContact(Contact object) async {
+    int result = await dbHelper.delete(object.id);
     if (result > 0) {
       updateListView();
     }

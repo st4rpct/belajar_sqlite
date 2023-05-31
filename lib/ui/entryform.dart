@@ -2,23 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:sqlite/models/contact.dart';
 
 class EntryForm extends StatefulWidget {
-  //final Contact contact;
-  const EntryForm({super.key});
+  final Contact contact;
+  const EntryForm({super.key, required this.contact});
 
   @override
-  State<EntryForm> createState() => _EntryFormState();
+  State<EntryForm> createState() => _EntryFormState(this.contact);
 }
 
 class _EntryFormState extends State<EntryForm> {
-  //Contact contact;
+  Contact contact;
+  _EntryFormState(this.contact);
+
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    if (contact.name != null) {
+      nameController.text = contact.name;
+      phoneController.text = contact.phone;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Data'),
+        title: contact.name == null ? Text('Tambah Data') : Text('Ubah Data'),
       ),
       body: Padding(
         padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
@@ -63,8 +70,13 @@ class _EntryFormState extends State<EntryForm> {
                       textScaleFactor: 1.5,
                     ),
                     onPressed: () {
-                      Contact contact =
-                          Contact(nameController.text, phoneController.text);
+                      if (contact == null) {
+                        Contact contact =
+                            Contact(nameController.text, phoneController.text);
+                      } else {
+                        contact.name = nameController.text;
+                        contact.phone = phoneController.text;
+                      }
                       Navigator.pop(context, contact);
                     },
                   )),
